@@ -1,6 +1,6 @@
 #The data used is manually loaded into IBM Db2 database for querying.
 #An alternative is to first load the dataset into a Pandas dataframe and then pushing it into the database. However, this is not optimal for querying SQL because pushing data using
-Python will map it to default datatypes that are not ideal.
+#Python will map it to default datatypes that are not ideal.
 #There are three datasets: crime, socieconomic and school datasets/tables
 #This implements sql-magic (SQL embedded into Python Jupyter Notebook)
 
