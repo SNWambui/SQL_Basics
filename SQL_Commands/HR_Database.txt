@@ -1,0 +1,161 @@
+﻿DDL Statements
+---Create tables to store data for HR database---
+
+
+CREATE TABLE EMPLOYEES (
+                            EMP_ID CHAR(9) NOT NULL, 
+                            F_NAME VARCHAR(15) NOT NULL,
+                            L_NAME VARCHAR(15) NOT NULL,
+                            SSN CHAR(9),
+                            B_DATE DATE,
+                            SEX CHAR,
+                            ADDRESS VARCHAR(30),
+                            JOB_ID CHAR(9),
+                            SALARY DECIMAL(10,2),
+                            MANAGER_ID CHAR(9),
+                            DEP_ID CHAR(9) NOT NULL,
+                            PRIMARY KEY (EMP_ID))
+;
+                            
+  CREATE TABLE JOB_HISTORY (
+                            EMPL_ID CHAR(9) NOT NULL, 
+                            START_DATE DATE,
+                            JOBS_ID CHAR(9) NOT NULL,
+                            DEPT_ID CHAR(9),
+                            PRIMARY KEY (EMPL_ID,JOBS_ID))
+;
+ 
+ CREATE TABLE JOBS (
+                            JOB_IDENT CHAR(9) NOT NULL, 
+                            JOB_TITLE VARCHAR(15) ,
+                            MIN_SALARY DECIMAL(10,2),
+                            MAX_SALARY DECIMAL(10,2),
+                            PRIMARY KEY (JOB_IDENT))
+;
+
+
+CREATE TABLE DEPARTMENTS (
+                            DEPT_ID_DEP CHAR(9) NOT NULL, 
+                            DEP_NAME VARCHAR(15) ,
+                            MANAGER_ID CHAR(9),
+                            LOC_ID CHAR(9),
+                            PRIMARY KEY (DEPT_ID_DEP))
+;
+
+
+CREATE TABLE LOCATIONS (
+                            LOCT_ID CHAR(9) NOT NULL,
+                            DEP_ID_LOC CHAR(9) NOT NULL,
+                            PRIMARY KEY (LOCT_ID,DEP_ID_LOC))
+;
+
+
+--------------------------------
+--DML Statements for HR database--
+-----------------------------------
+---Once the data has been fed into the database, we can now access the data based on what we want---
+---select all employees containing Elgin, IL in the address---
+select * from EMPLOYEES 
+        where ADDRESS like '%Elgin,IL'
+;
+
+
+---select all employees with the birth date containing 197--
+select * from EMPLOYEES
+        where B_DATE like '197%'
+;
+
+
+---select all employees with department number 5 and salary between 60k and 70k---
+select * from  EMPLOYEES
+        where DEP_ID = 5 
+        and SALARY between 60000 and 70000
+;
+
+
+---select all employees ordering them by the department number in ascending order---
+select * from EMPLOYEES
+        ORDER BY DEP_ID
+;
+
+
+---count the number of employees grouped by the department number---
+select DEP_ID, COUNT(*) from EMPLOYEES
+        GROUP BY DEP_ID
+;
+
+
+---count the number of employees, get their average salary and group by department number---
+select DEP_ID, COUNT(*) , AVG(SALARY) from EMPLOYEES
+        GROUP BY DEP_ID
+;
+
+
+---Select the names and job start dates of all employees who work for the department number 5.---
+select E.F_NAME,E.L_NAME, JH.START_DATE 
+        from EMPLOYEES as E 
+        INNER JOIN JOB_HISTORY as JH on E.EMP_ID=JH.EMPL_ID 
+        where E.DEP_ID ='5'
+;
+
+
+--- Select the names, job start dates, and job titles of all employees who work for the department number 5.---
+select E.F_NAME,E.L_NAME, JH.START_DATE, J.JOB_TITLE 
+        from EMPLOYEES as E 
+        INNER JOIN JOB_HISTORY as JH on E.EMP_ID=JH.EMPL_ID 
+        INNER JOIN JOBS as J on E.JOB_ID=J.JOB_IDENT
+        where E.DEP_ID ='5'
+;
+
+
+---Perform a Left Outer Join on the EMPLOYEES and DEPARTMENT tables and select employee id, last name, department id and department name for all employees---
+select E.EMP_ID,E.L_NAME,E.DEP_ID,D.DEP_NAME
+        from EMPLOYEES AS E 
+        LEFT OUTER JOIN DEPARTMENTS AS D ON E.DEP_ID=D.DEPT_ID_DEP
+;
+        
+--- Limit the result set to include only the rows for employees born before 1980.---
+select E.EMP_ID,E.L_NAME,E.DEP_ID,D.DEP_NAME
+        from EMPLOYEES AS E 
+        LEFT OUTER JOIN DEPARTMENTS AS D ON E.DEP_ID=D.DEPT_ID_DEP 
+        where YEAR(E.B_DATE) < 1980
+ ;
+
+
+---Include all the employees but department names for only the employees who were born before 1980---
+select E.EMP_ID,E.L_NAME,E.DEP_ID,D.DEP_NAME
+        from EMPLOYEES AS E 
+        INNER JOIN DEPARTMENTS AS D ON E.DEP_ID=D.DEPT_ID_DEP 
+        where YEAR(E.B_DATE) < 1980
+ ;
+
+
+---Perform a Full Join on the EMPLOYEES and DEPARTMENT tables and select the First name, Last name and Department name of all employees.
+select E.EMP_ID,E.L_NAME,E.DEP_ID,D.DEP_NAME
+        from EMPLOYEES AS E 
+        LEFT OUTER JOIN DEPARTMENTS AS D ON E.DEP_ID=D.DEPT_ID_DEP 
+        AND YEAR(E.B_DATE) < 1980
+;
+
+
+--- Perform a Full Join on the EMPLOYEES and DEPARTMENT tables and select the First name, Last name and Department name of all employees---
+select E.F_NAME,E.L_NAME,D.DEP_NAME
+        from EMPLOYEES AS E 
+        FULL OUTER JOIN DEPARTMENTS AS D ON E.DEP_ID=D.DEPT_ID_DEP
+;
+
+
+--- Include all employee names but department id and department names only for male employees---
+select E.F_NAME,E.L_NAME,D.DEPT_ID_DEP, D.DEP_NAME
+        from EMPLOYEES AS E 
+        FULL OUTER JOIN DEPARTMENTS AS D ON E.DEP_ID=D.DEPT_ID_DEP
+        AND E.SEX = 'M'
+;
+
+
+--- Or---
+select E.F_NAME,E.L_NAME,D.DEPT_ID_DEP, D.DEP_NAME
+        from EMPLOYEES AS E 
+        LEFT OUTER JOIN DEPARTMENTS AS D ON E.DEP_ID=D.DEPT_ID_DEP
+        AND E.SEX = 'M'
+;
